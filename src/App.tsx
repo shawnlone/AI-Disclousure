@@ -348,7 +348,7 @@ function App() {
                 <RefreshCcw aria-hidden="true" />
                 {t.reset}
               </button>
-              <button type="button" className="primary-button" onClick={() => setInput(exampleInput)}>
+              <button type="button" className="ghost-button" onClick={() => setInput(exampleInput)}>
                 <Wand2 aria-hidden="true" />
                 {t.example}
               </button>
