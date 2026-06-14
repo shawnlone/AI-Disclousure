@@ -1,0 +1,63 @@
+:root {
+  --bg: #0b0d0f;
+  --bg-2: #101316;
+  --surface: #13171b;
+  --surface-2: #171c21;
+  --surface-3: #1d2328;
+  --text: #c9d0d7;
+  --text-muted: #89929b;
+  --text-strong: #f0f3f5;
+  --border: rgba(171, 184, 190, 0.16);
+  --border-strong: rgba(189, 199, 202, 0.3);
+  --accent: #8fb3a9;
+  --accent-2: #b7a06a;
+  --accent-3: #94a3b2;
+  --danger: #c4a16d;
+  --focus: rgba(143, 179, 169, 0.28);
+  --shadow: 0 22px 58px rgba(0, 0, 0, 0.32);
+  --radius: 8px;
+  color: var(--text);
+  background: var(--bg);
+  font-family:
+    Geist, "SF Pro Display", "SF Pro Text", ui-sans-serif, system-ui,
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Microsoft YaHei", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  background:
+    linear-gradient(rgba(221, 226, 221, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(221, 226, 221, 0.014) 1px, transparent 1px),
+    linear-gradient(180deg, #101316 0%, #0b0d0f 48%, #0e1113 100%);
+  background-size: 48px 48px, 48px 48px, auto;
+}
+
+a {
+  color: inherit;
+}
+
+p {
+  overflow-wrap: anywhere;
+}
+
+::selection {
+  color: #0b0d0f;
+  background: var(--accent);
+}

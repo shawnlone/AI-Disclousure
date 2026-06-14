@@ -1,0 +1,22 @@
+# AI Disclosure Generator
+
+AI Disclosure Generator is a free browser-based tool for drafting platform-ready AI use disclosure statements.
+
+## Main capability
+
+Users choose a publishing context such as Steam/Game page, YouTube video, Amazon KDP book, client work, blog post, website image, marketing material, or other content. They can select AI tools, AI use cases, human review level, tone, and output language.
+
+The app returns a disclosure statement, a short social/media version, structured bullet points, and clarity notes for sensitive cases.
+
+## Positioning
+
+The tool focuses on practical disclosure wording for creators, indie game developers, YouTubers, KDP authors, freelancers, and client-facing delivery work. It does not provide legal advice or guarantee compliance with platform policies.
+
+## Privacy
+
+The tool runs locally in the browser. It does not require login, store user input, call an AI API, or send form values to a server.
+
+## Useful pages
+
+- Home and generator: https://ai-disclosure-generator.com/
+- Sponsor contact: mailto:hello@ai-disclosure-generator.com
