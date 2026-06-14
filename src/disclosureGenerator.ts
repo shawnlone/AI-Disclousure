@@ -14,9 +14,9 @@ export type AiTool =
   | 'Claude'
   | 'Gemini'
   | 'Midjourney'
-  | 'DALL-E'
+  | 'Grok'
+  | 'DeepSeek'
   | 'Stable Diffusion'
-  | 'Runway'
   | 'Other'
 
 export type AiUse =

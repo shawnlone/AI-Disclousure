@@ -63,9 +63,9 @@ const aiTools: AiTool[] = [
   'Claude',
   'Gemini',
   'Midjourney',
-  'DALL-E',
+  'Grok',
+  'DeepSeek',
   'Stable Diffusion',
-  'Runway',
   'Other',
 ]
 
