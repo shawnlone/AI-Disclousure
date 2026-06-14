@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ai-disclosure-generator.com/sitemap.xml
+Sitemap: https://shawnlone.github.io/AI-Disclousure/sitemap.xml

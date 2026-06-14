@@ -3,7 +3,7 @@ const defaultContactEmail = 'hello@ai-disclosure-generator.com'
 export const siteConfig = {
   siteUrl:
     import.meta.env.VITE_SITE_URL?.replace(/\/$/, '') ||
-    'https://ai-disclosure-generator.com',
+    'https://shawnlone.github.io/AI-Disclousure',
   contactEmail: import.meta.env.VITE_CONTACT_EMAIL || defaultContactEmail,
   sponsorPaymentUrl: import.meta.env.VITE_SPONSOR_PAYMENT_URL || '',
   customServicePaymentUrl: import.meta.env.VITE_CUSTOM_SERVICE_PAYMENT_URL || '',
