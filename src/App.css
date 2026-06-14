@@ -193,7 +193,7 @@ button {
   position: relative;
   display: grid;
   grid-template-columns: minmax(420px, 1.15fr) minmax(240px, 0.85fr);
-  gap: 6px 24px;
+  gap: 8px 28px;
   align-items: end;
   overflow: hidden;
   padding: clamp(15px, 1.4vw, 20px);
@@ -237,7 +237,7 @@ h1 {
   max-width: 870px;
   margin-bottom: 0;
   color: var(--text-strong);
-  font-size: clamp(30px, 2.65vw, 40px);
+  font-size: clamp(30px, 2.28vw, 36px);
   line-height: 1.04;
   letter-spacing: 0;
 }
@@ -262,10 +262,7 @@ h3 {
   color: var(--text);
   font-size: 14px;
   line-height: 1.5;
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  overflow: visible;
 }
 
 .status-strip {
@@ -688,16 +685,16 @@ fieldset {
 }
 
 .output-section {
-  margin: 0 20px 14px;
+  margin: 0 20px 10px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 20px;
+  padding: 14px 16px 16px;
   background: #101418;
 }
 
 .primary-output {
-  margin-top: 8px;
-  padding-top: 24px;
+  margin-top: 6px;
+  padding-top: 14px;
   border-color: rgba(143, 179, 169, 0.3);
   background:
     linear-gradient(180deg, rgba(143, 179, 169, 0.08), transparent),
@@ -726,10 +723,10 @@ fieldset {
 .output-section textarea {
   width: 100%;
   min-height: 188px;
-  margin-top: 16px;
+  margin-top: 8px;
   border: 1px solid rgba(171, 184, 190, 0.14);
   border-radius: 7px;
-  padding: 15px;
+  padding: 13px;
   color: var(--text);
   background: rgba(5, 7, 9, 0.34);
   font: inherit;
@@ -814,8 +811,8 @@ fieldset {
 .document-columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin: 0 20px 14px;
+  gap: 12px;
+  margin: 0 20px 10px;
 }
 
 .document-columns .output-section {
