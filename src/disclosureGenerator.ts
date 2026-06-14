@@ -204,34 +204,42 @@ function buildUseSentence(input: DisclosureInput, locale: 'en' | 'zh') {
   return `${tools} ${input.tools.length === 1 ? 'was' : 'were'} used for ${uses}.`
 }
 
-function applyTone(statement: string, input: DisclosureInput, locale: 'en' | 'zh') {
-  if (input.tone === 'short') return statement
+function buildPrimary(input: DisclosureInput, locale: 'en' | 'zh') {
+  const tools = joinList(input.tools, locale)
+  const uses = joinList(
+    input.uses.map((use) => aiUseLabels[use][locale]),
+    locale,
+  )
+
+  if (locale === 'zh') {
+    if (input.tone === 'short') {
+      return `AI 使用披露：本${contentTypeLabels[input.contentType].zh}使用 ${tools} 辅助${uses}。${reviewCopy[input.reviewLevel].zh}`
+    }
+
+    if (input.tone === 'formal') {
+      return `${contextCopy[input.contentType].zh}${tools} 被用于${uses}。${reviewCopy[input.reviewLevel].zh}本说明仅用于透明披露 AI 辅助使用情况，不构成法律意见。`
+    }
+
+    if (input.tone === 'friendly') {
+      return `${contextCopy[input.contentType].zh}我们使用 ${tools} 辅助${uses}，并在发布前按当前审核状态进行了人工检查：${reviewCopy[input.reviewLevel].zh}我们希望清楚说明 AI 在创作流程中的辅助作用。`
+    }
+
+    return `${contextCopy[input.contentType].zh}${tools} 被用于${uses}。${reviewCopy[input.reviewLevel].zh}${platformGuidance[input.contentType].zh}如平台或客户要求更详细说明，应以其最新规则为准。`
+  }
+
+  if (input.tone === 'short') {
+    return `AI-use disclosure: ${tools} assisted with ${uses} for this ${contentTypeLabels[input.contentType].en.toLowerCase()}. Human review status: ${input.reviewLevel}.`
+  }
 
   if (input.tone === 'formal') {
-    return locale === 'zh'
-      ? `${statement} 本说明仅用于透明披露 AI 辅助使用情况，不构成法律意见。`
-      : `${statement} This statement is provided for transparency and does not constitute legal advice.`
+    return `${contextCopy[input.contentType].en} ${buildUseSentence(input, 'en')} ${reviewCopy[input.reviewLevel].en} This statement is provided for transparency and does not constitute legal advice.`
   }
 
-  if (input.tone === 'platform-safe') {
-    return locale === 'zh'
-      ? `${statement} 如平台或客户要求更详细说明，应以其最新规则为准。`
-      : `${statement} If a platform or client requires more detailed disclosure, its current rules should be followed.`
+  if (input.tone === 'friendly') {
+    return `${contextCopy[input.contentType].en} ${tools} helped with ${uses}, and the final material was handled with the following human review status: ${input.reviewLevel}. We want to be clear about how AI assisted the creative process.`
   }
 
-  return locale === 'zh'
-    ? `${statement} 我们希望清楚说明 AI 在创作流程中的辅助作用。`
-    : `${statement} We want to be clear about how AI assisted the creative process.`
-}
-
-function buildPrimary(input: DisclosureInput, locale: 'en' | 'zh') {
-  const base = [
-    contextCopy[input.contentType][locale],
-    buildUseSentence(input, locale),
-    reviewCopy[input.reviewLevel][locale],
-  ].join(locale === 'zh' ? '' : ' ')
-
-  return applyTone(base, input, locale)
+  return `${contextCopy[input.contentType].en} ${buildUseSentence(input, 'en')} ${reviewCopy[input.reviewLevel].en} ${platformGuidance[input.contentType].en} If a platform or client requires more detailed disclosure, its current rules should be followed.`
 }
 
 function buildShort(input: DisclosureInput, locale: 'en' | 'zh') {
@@ -242,7 +250,23 @@ function buildShort(input: DisclosureInput, locale: 'en' | 'zh') {
   const tools = joinList(input.tools, locale)
 
   if (locale === 'zh') {
+    if (input.tone === 'friendly') {
+      return `AI 说明：本${contentTypeLabels[input.contentType].zh}使用 ${tools} 辅助${uses}，最终内容经过相应人工审核。`
+    }
+
+    if (input.tone === 'formal') {
+      return `AI 使用披露：${tools} 被用于${uses}；人工审核状态：${input.reviewLevel}。`
+    }
+
     return `AI 披露：本${contentTypeLabels[input.contentType].zh}使用 ${tools} 辅助${uses}；人工审核状态：${reviewCopy[input.reviewLevel].zh}`
+  }
+
+  if (input.tone === 'friendly') {
+    return `AI note: ${tools} helped with ${uses} for this ${contentTypeLabels[input.contentType].en.toLowerCase()}; the final material was reviewed according to the selected review status.`
+  }
+
+  if (input.tone === 'formal') {
+    return `AI-use disclosure: ${tools} ${input.tools.length === 1 ? 'was' : 'were'} used for ${uses}; human review status: ${input.reviewLevel}.`
   }
 
   return `AI disclosure: ${tools} assisted with ${uses} for this ${contentTypeLabels[input.contentType].en.toLowerCase()}; human review status: ${input.reviewLevel}.`
@@ -250,22 +274,44 @@ function buildShort(input: DisclosureInput, locale: 'en' | 'zh') {
 
 function buildStructured(input: DisclosureInput, locale: 'en' | 'zh') {
   if (locale === 'zh') {
-    return [
+    const lines = [
       `内容类型：${contentTypeLabels[input.contentType].zh}`,
       `使用的 AI 工具：${joinList(input.tools, 'zh')}`,
       `AI 用途：${joinList(input.uses.map((use) => aiUseLabels[use].zh), 'zh')}`,
       `人工审核：${reviewCopy[input.reviewLevel].zh}`,
-      `平台提示：${platformGuidance[input.contentType].zh}`,
     ]
+
+    if (input.tone === 'formal') {
+      lines.push('语气：正式披露，适合提交给平台、出版方或客户留档。')
+    } else if (input.tone === 'friendly') {
+      lines.push('语气：友好说明，适合面向读者、观众或客户沟通。')
+    } else if (input.tone === 'platform-safe') {
+      lines.push(`平台提示：${platformGuidance[input.contentType].zh}`)
+    } else {
+      lines.push('语气：简短说明，适合放在描述、备注或说明区。')
+    }
+
+    return lines
   }
 
-  return [
+  const lines = [
     `Content type: ${contentTypeLabels[input.contentType].en}`,
     `AI tools used: ${joinList(input.tools, 'en')}`,
     `AI use: ${joinList(input.uses.map((use) => aiUseLabels[use].en), 'en')}`,
     `Human review: ${input.reviewLevel}`,
-    `Platform note: ${platformGuidance[input.contentType].en}`,
   ]
+
+  if (input.tone === 'formal') {
+    lines.push('Tone: formal disclosure for platform, publisher, or client records.')
+  } else if (input.tone === 'friendly') {
+    lines.push('Tone: reader-friendly explanation for public-facing communication.')
+  } else if (input.tone === 'platform-safe') {
+    lines.push(`Platform note: ${platformGuidance[input.contentType].en}`)
+  } else {
+    lines.push('Tone: concise note for descriptions, captions, or submission fields.')
+  }
+
+  return lines
 }
 
 function riskNotes(input: DisclosureInput) {
