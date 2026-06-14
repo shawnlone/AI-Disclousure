@@ -68,7 +68,7 @@ export const aiUseLabels: Record<AiUse, { en: string; zh: string }> = {
   translation: { en: 'translation', zh: '翻译' },
   'image generation': { en: 'image generation', zh: '图像生成' },
   'code assistance': { en: 'code assistance', zh: '代码辅助' },
-  'research support': { en: 'research support', zh: '研究辅助' },
+  'research support': { en: 'research support', zh: '资料整理' },
   'voice/video generation': { en: 'voice/video generation', zh: '音视频生成' },
 }
 
@@ -82,7 +82,7 @@ export const defaultInput: DisclosureInput = {
 }
 
 export const exampleInput: DisclosureInput = {
-  contentType: 'game',
+  contentType: 'kdp',
   tools: ['ChatGPT', 'Midjourney'],
   uses: ['drafting', 'image generation'],
   reviewLevel: 'partially reviewed',
@@ -93,15 +93,15 @@ export const exampleInput: DisclosureInput = {
 const reviewCopy = {
   'fully reviewed': {
     en: 'All final content was reviewed, edited, and approved by a human before publication.',
-    zh: '所有最终内容均已由人工审核、修改并确认后发布。',
+    zh: '所有最终内容在发布前均经过人工审核、编辑和确认。',
   },
   'partially reviewed': {
     en: 'The final content was partially reviewed and edited by a human before publication.',
-    zh: '最终内容在发布前经过了部分人工审核和修改。',
+    zh: '最终内容在发布前经过了部分人工审核和编辑。',
   },
   'not reviewed': {
     en: 'Some AI-assisted content may not have received full human review before publication.',
-    zh: '部分 AI 辅助内容可能未经过完整人工审核。',
+    zh: '部分 AI 辅助内容可能尚未经过完整人工审核。',
   },
 } satisfies Record<ReviewLevel, { en: string; zh: string }>
 
@@ -141,6 +141,45 @@ const contextCopy = {
   other: {
     en: 'This content was created with assistance from AI tools.',
     zh: '本内容在创作过程中使用了 AI 工具辅助。',
+  },
+} satisfies Record<ContentType, { en: string; zh: string }>
+
+const platformGuidance = {
+  game: {
+    en: 'For a Steam or game storefront, describe where AI appears in player-facing assets, store copy, screenshots, concept art, code support, or other published material.',
+    zh: '用于 Steam 或游戏商店页面时，建议说明 AI 出现在玩家可见素材、商店文案、截图、概念图、代码辅助或其他发布材料中的哪些位置。',
+  },
+  youtube: {
+    en: 'For YouTube, add extra detail if AI created realistic altered or synthetic visuals, voices, events, or scenes that viewers could mistake for real footage.',
+    zh: '用于 YouTube 时，如果 AI 生成了容易被观众误认为真实的画面、声音、事件或场景，应补充更明确的说明。',
+  },
+  kdp: {
+    en: 'For KDP, separate AI-generated material from AI-assisted work. Generated images, translated text, or substantial generated passages may need more explicit wording.',
+    zh: '用于 KDP 时，建议区分 AI 生成内容和 AI 辅助内容。AI 生成图片、翻译文本或大段生成文字通常需要更明确说明。',
+  },
+  client: {
+    en: 'For client work, keep the note specific enough for handoff: name the tools, what they assisted with, and what was reviewed by a human.',
+    zh: '用于客户交付时，建议写清工具名称、AI 辅助环节，以及哪些内容经过人工审核。',
+  },
+  blog: {
+    en: 'For public posts, use plain language and avoid overstating either human-only authorship or AI autonomy.',
+    zh: '用于公开文章时，建议使用清楚的日常语言，不夸大纯人工创作，也不夸大 AI 的自主作用。',
+  },
+  education: {
+    en: 'For education, follow the instructor, school, or publisher policy before submitting.',
+    zh: '用于教育场景时，提交前应优先遵守教师、学校或出版方规则。',
+  },
+  marketing: {
+    en: 'For marketing, avoid implying that AI-generated examples, testimonials, people, or results are real unless they are verified.',
+    zh: '用于营销材料时，避免让 AI 生成的案例、评价、人物或结果被误认为真实且已验证。',
+  },
+  'website-image': {
+    en: 'For website images, mention generated or AI-edited visual assets when they represent products, people, places, or examples.',
+    zh: '用于网站图片时，如果图像代表产品、人物、地点或案例，应说明其为 AI 生成或 AI 辅助处理。',
+  },
+  other: {
+    en: 'Adapt the wording to the rules of the platform, client, or publisher where the content will appear.',
+    zh: '请根据内容发布平台、客户或出版方的规则调整措辞。',
   },
 } satisfies Record<ContentType, { en: string; zh: string }>
 
@@ -216,7 +255,7 @@ function buildStructured(input: DisclosureInput, locale: 'en' | 'zh') {
       `使用的 AI 工具：${joinList(input.tools, 'zh')}`,
       `AI 用途：${joinList(input.uses.map((use) => aiUseLabels[use].zh), 'zh')}`,
       `人工审核：${reviewCopy[input.reviewLevel].zh}`,
-      '用途说明：本说明用于透明披露 AI 辅助情况，不替代平台规则或法律建议。',
+      `平台提示：${platformGuidance[input.contentType].zh}`,
     ]
   }
 
@@ -225,7 +264,7 @@ function buildStructured(input: DisclosureInput, locale: 'en' | 'zh') {
     `AI tools used: ${joinList(input.tools, 'en')}`,
     `AI use: ${joinList(input.uses.map((use) => aiUseLabels[use].en), 'en')}`,
     `Human review: ${input.reviewLevel}`,
-    'Note: This disclosure supports transparency and should be adapted to current platform or client rules.',
+    `Platform note: ${platformGuidance[input.contentType].en}`,
   ]
 }
 
@@ -234,26 +273,31 @@ function riskNotes(input: DisclosureInput) {
 
   if (input.reviewLevel === 'not reviewed') {
     notes.push(
-      'High clarity recommended: because the output was not fully human-reviewed, use a direct disclosure and avoid implying human-only authorship.',
-    )
-    notes.push('建议更明确披露：如果内容未经过完整人工审核，不要写成只是轻微 AI 辅助。')
-  }
-
-  if (input.contentType === 'education') {
-    notes.push(
-      'Education use can be sensitive. Follow the school, instructor, or publisher policy before submitting.',
+      'High clarity recommended: because the output was not fully human-reviewed, use direct wording and avoid implying human-only authorship.',
     )
   }
 
   if (input.contentType === 'game') {
     notes.push(
-      'Game storefronts may ask where AI appears in player-facing content. Keep your answer specific.',
+      'Steam/game storefront note: be specific about whether AI appears in art, store copy, dialogue, code support, audio, or other player-facing content.',
     )
   }
 
   if (input.contentType === 'kdp') {
     notes.push(
-      'KDP distinguishes AI-generated from AI-assisted work. Adapt this wording to the current publishing form before submission.',
+      'KDP note: distinguish AI-generated material from AI-assisted work before submitting the publishing form.',
+    )
+  }
+
+  if (input.contentType === 'youtube') {
+    notes.push(
+      'YouTube note: realistic altered or synthetic visuals, voices, scenes, or events may need a more explicit disclosure.',
+    )
+  }
+
+  if (input.contentType === 'client') {
+    notes.push(
+      'Client handoff note: clients usually care most about what AI touched and what a human reviewed.',
     )
   }
 
@@ -262,7 +306,7 @@ function riskNotes(input: DisclosureInput) {
     input.uses.includes('voice/video generation')
   ) {
     notes.push(
-      'Generated media may need extra detail when it resembles real people, brands, or copyrighted characters.',
+      'Generated media may need extra detail when it resembles real people, brands, copyrighted characters, or real events.',
     )
   }
 

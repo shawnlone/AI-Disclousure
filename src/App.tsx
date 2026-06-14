@@ -9,12 +9,10 @@ import {
   CheckCheck,
   CircleDashed,
   Clipboard,
-  Coffee,
   Code2,
   FileCheck2,
   FileText,
   Gamepad2,
-  GraduationCap,
   Image,
   Languages,
   LayoutDashboard,
@@ -46,7 +44,6 @@ import {
   exampleInput,
   generateDisclosure,
 } from './disclosureGenerator'
-import { buildMailto, siteConfig } from './siteConfig'
 
 type UiLanguage = 'en' | 'zh'
 
@@ -98,7 +95,7 @@ const contentTypeIcons: Record<ContentType, LucideIcon> = {
   game: Gamepad2,
   kdp: BookOpen,
   client: BriefcaseBusiness,
-  education: GraduationCap,
+  education: BookOpen,
   marketing: Megaphone,
   'website-image': Image,
   other: MoreHorizontal,
@@ -148,28 +145,23 @@ const useLabels: Record<AiUse, Record<UiLanguage, string>> = {
   translation: { en: 'Translation', zh: '翻译' },
   'image generation': { en: 'Image generation', zh: '图像生成' },
   'code assistance': { en: 'Code assistance', zh: '代码辅助' },
-  'research support': { en: 'Research support', zh: '研究辅助' },
+  'research support': { en: 'Research support', zh: '资料整理' },
   'voice/video generation': { en: 'Voice/video', zh: '音视频生成' },
 }
 
 const copy = {
   en: {
-    navTemplates: 'Templates',
-    navSponsor: 'Sponsor',
-    navAbout: 'About',
-    navPrivacy: 'Privacy',
-    navContact: 'Contact',
     brandSub: 'Platform disclosure workspace',
     eyebrow: 'Steam, YouTube, KDP, Client Work',
-    title: 'Draft platform-ready AI disclosure statements.',
+    title: 'Know what to say when a platform asks how you used AI.',
     subtitle:
-      'A focused local-first tool for indie game teams, YouTubers, KDP authors, and freelancers who need clear AI-use wording for real publishing contexts.',
-    productStatus: 'Steam/Game',
-    noAccount: 'YouTube/KDP',
-    exportSet: 'Client-ready',
+      'Generate copy-ready disclosure text for Steam, YouTube, KDP, and client handoffs. Then edit the wording before you publish.',
+    productStatus: 'Platform-specific',
+    noAccount: 'No login',
+    exportSet: 'Editable output',
     formTitle: 'Inputs',
-    formSubtitle: 'Choose a platform context, AI role, review level, tone, and output language.',
-    contentType: 'Content type',
+    formSubtitle: 'Choose a publishing context, AI role, review level, tone, and output language.',
+    contentType: 'Publishing context',
     aiTools: 'AI tools',
     aiUse: 'AI role',
     review: 'Human review',
@@ -177,131 +169,62 @@ const copy = {
     outputLanguage: 'Output',
     example: 'Load example',
     reset: 'Reset',
-    resultTitle: 'Document preview',
-    resultSubtitle: 'Disclosure statement, social version, and structured delivery note.',
-    primary: 'Statement',
-    short: 'Social copy',
-    structured: 'Structured note',
-    clarity: 'Clarity check',
+    resultTitle: 'Editable draft',
+    resultSubtitle:
+      'Start with a platform-aware draft, revise it in place, and copy the final wording.',
+    primary: 'Main disclosure',
+    short: 'Short public note',
+    structured: 'Platform / client form',
+    clarity: 'Disclosure guidance',
     copied: 'Copied to clipboard.',
     fallbackCopied: 'Copied with browser fallback.',
-    sponsorSold: 'Launch sponsor',
-    sponsorSlot: '$10 launch sponsor slot',
-    sponsorSlotBody:
-      'A compact placement for a relevant creator, compliance, or publishing product.',
-    sponsorCta: 'Sponsor this tool',
-    visitSponsor: 'Visit sponsor',
-    adSlot: 'Reserved placement',
-    adBody: 'No ad scripts are loaded in this version.',
-    serviceEyebrow: 'Paid micro-service',
-    serviceTitle: '$10 custom rewrite',
-    serviceBody:
-      'Send project type, AI tools, AI role, and review level. Get a polished statement, short version, and structured bullets.',
-    serviceCta: 'Request rewrite',
-    templatesEyebrow: 'SEO templates',
-    templatesTitle: 'Purpose-built AI disclosure examples',
-    aboutTitle: 'Built for transparent AI-use statements',
-    aboutBody:
-      'This tool helps people describe where AI supported a workflow. It does not decide whether a use case is allowed, and it does not replace platform rules, school policies, client contracts, or legal advice.',
-    privacyTitle: 'Private by default',
-    privacyBody:
-      'Inputs stay in the browser. This version has no account system, database, analytics script, payment integration, or AI API call.',
-    contactTitle: 'Need a platform-specific template?',
-    contactBody: 'Send sponsor requests, template suggestions, or custom rewrite details to',
     qualityTitle: 'Output profile',
-    qualityA: 'Disclosure',
-    qualityB: 'Social',
-    qualityC: 'Client form',
-    noRisk: 'No high-risk combination detected for the current inputs.',
-    noteSingular: 'note',
-    notePlural: 'notes',
-    launchEyebrow: 'First $10 launch offer',
-    launchTitle: 'Turn this tool into a tiny paid placement.',
-    launchBody:
-      'Use the launch sponsor slot or custom rewrite offer as the first conversion path while SEO traffic compounds.',
-    launchStepA: 'Sponsor slot',
-    launchStepABody: '$10 for a compact placement on a focused AI transparency tool.',
-    launchStepB: 'Custom rewrite',
-    launchStepBBody: '$10 for one polished disclosure statement package.',
-    launchStepC: 'Outreach pitch',
-    launchStepCBody:
-      'Copy a short pitch and send it to tool makers, newsletter authors, or creator communities.',
-    copyPitch: 'Copy pitch',
+    qualityA: 'Platform note',
+    qualityB: 'Public copy',
+    qualityC: 'Form-ready',
+    editHint: 'Editable after generation',
   },
   zh: {
-    navTemplates: '模板',
-    navSponsor: '赞助',
-    navAbout: '关于',
-    navPrivacy: '隐私',
-    navContact: '联系',
     brandSub: '平台披露文案工作台',
     eyebrow: 'Steam、YouTube、KDP、客户交付',
-    title: '生成更贴近平台场景的 AI 使用披露。',
+    title: '当平台问你如何使用 AI 时，知道该怎么写。',
     subtitle:
-      '面向独立游戏团队、YouTuber、KDP 作者和自由职业者，用更具体的措辞说明 AI 在真实发布场景中的参与方式。',
-    productStatus: 'Steam/游戏',
-    noAccount: 'YouTube/KDP',
-    exportSet: '客户交付',
+      '为 Steam、YouTube、KDP 和客户交付生成可直接修改的 AI 使用披露文案。生成后可以继续编辑，再复制发布。',
+    productStatus: '平台专用',
+    noAccount: '无需登录',
+    exportSet: '结果可编辑',
     formTitle: '输入参数',
-    formSubtitle: '选择平台场景、AI 用途、审核状态、语气和输出语言。',
-    contentType: '内容类型',
+    formSubtitle: '选择发布场景、AI 用途、人工审核状态、语气和输出语言。',
+    contentType: '发布场景',
     aiTools: 'AI 工具',
-    aiUse: 'AI 作用',
+    aiUse: 'AI 用途',
     review: '人工审核',
     tone: '语气',
     outputLanguage: '输出',
     example: '载入示例',
     reset: '重置',
-    resultTitle: '文档预览',
-    resultSubtitle: '完整披露、社媒短版和结构化交付说明会实时更新。',
-    primary: '披露声明',
-    short: '社媒短版',
-    structured: '结构化说明',
-    clarity: '清晰度检查',
+    resultTitle: '可编辑草稿',
+    resultSubtitle: '先生成贴近平台场景的草稿，再在右侧直接修改，最后复制使用。',
+    primary: '主要披露说明',
+    short: '简短公开说明',
+    structured: '平台/客户表单',
+    clarity: '披露提示',
     copied: '已复制到剪贴板。',
     fallbackCopied: '已使用浏览器兼容方式复制。',
-    sponsorSold: '启动赞助商',
-    sponsorSlot: '$10 启动赞助位',
-    sponsorSlotBody: '适合创作者工具、合规工具、发布流程产品的轻量展示位。',
-    sponsorCta: '赞助这个工具',
-    visitSponsor: '访问赞助商',
-    adSlot: '预留展示位',
-    adBody: '当前版本不加载广告脚本。',
-    serviceEyebrow: '付费小服务',
-    serviceTitle: '$10 定制改写',
-    serviceBody:
-      '发送项目类型、使用的 AI 工具、AI 参与环节和人工审核状态，获得完整披露、短版和结构化说明。',
-    serviceCta: '请求改写',
-    templatesEyebrow: 'SEO 模板',
-    templatesTitle: '常见发布场景的 AI 披露示例',
-    aboutTitle: '为透明、诚实的 AI 使用说明而设计',
-    aboutBody:
-      '这个工具帮助创作者说明 AI 在工作流中的辅助位置。它不判断你的使用是否被允许，也不替代平台规则、学校政策、客户合同或法律建议。',
-    privacyTitle: '默认保护隐私',
-    privacyBody:
-      '输入只停留在浏览器。本版本没有账号、数据库、统计脚本、支付集成或 AI API 调用。',
-    contactTitle: '需要某个平台的专用模板？',
-    contactBody: '赞助、模板建议或定制文案需求请发送到',
     qualityTitle: '输出结构',
-    qualityA: '披露声明',
-    qualityB: '社媒文案',
-    qualityC: '客户表单',
-    noRisk: '当前参数未发现高风险组合。',
-    noteSingular: '条提示',
-    notePlural: '条提示',
-    launchEyebrow: '第一笔 $10 入口',
-    launchTitle: '把这个工具变成一个小型付费展示位。',
-    launchBody:
-      '在 SEO 流量积累之前，先用启动赞助位或定制改写服务拿到第一笔转化。',
-    launchStepA: '赞助位',
-    launchStepABody: '$10 获得一个面向 AI 透明披露用户的小型展示位。',
-    launchStepB: '定制改写',
-    launchStepBBody: '$10 提供一套完整披露、短版和结构化说明。',
-    launchStepC: '外联话术',
-    launchStepCBody: '复制一段简短 pitch，发给工具作者、newsletter 作者或创作者社区。',
-    copyPitch: '复制话术',
+    qualityA: '平台提示',
+    qualityB: '公开文案',
+    qualityC: '表单可用',
+    editHint: '生成后可编辑',
   },
 } satisfies Record<UiLanguage, Record<string, string>>
+
+type EditableDraft = {
+  signature: string
+  primary: string
+  short: string
+  structured: string
+}
 
 function toggleMulti<T extends string>(values: T[], value: T) {
   if (values.includes(value)) {
@@ -318,8 +241,14 @@ function App() {
   const [copyMessage, setCopyMessage] = useState('')
   const t = copy[uiLanguage]
   const output = useMemo(() => generateDisclosure(input), [input])
-  const sponsorHref =
-    siteConfig.sponsorPaymentUrl || buildMailto('Sponsor AI Disclosure Generator')
+  const outputSignature = JSON.stringify(input)
+  const [editableDraft, setEditableDraft] = useState<EditableDraft>(() =>
+    createEditableDraft(outputSignature, output),
+  )
+
+  if (editableDraft.signature !== outputSignature) {
+    setEditableDraft(createEditableDraft(outputSignature, output))
+  }
 
   function updateInput<Value extends DisclosureInput[keyof DisclosureInput]>(
     key: keyof DisclosureInput,
@@ -366,15 +295,6 @@ function App() {
         </a>
 
         <div className="header-actions">
-          <a
-            className="header-sponsor-link"
-            href={sponsorHref}
-            target={siteConfig.sponsorPaymentUrl ? '_blank' : undefined}
-            rel={siteConfig.sponsorPaymentUrl ? 'noreferrer' : undefined}
-          >
-            <Coffee aria-hidden="true" />
-            {t.navSponsor}
-          </a>
           <div className="language-toggle" aria-label="Interface language">
             <button
               type="button"
@@ -555,7 +475,7 @@ function App() {
 
             <div className="document-header">
               <div>
-                <p className="eyebrow">{t.resultTitle}</p>
+                <p className="eyebrow">{t.editHint}</p>
                 <h2>{t.resultSubtitle}</h2>
               </div>
               <div className="doc-profile" aria-label={t.qualityTitle}>
@@ -565,60 +485,75 @@ function App() {
               </div>
             </div>
 
-            <article className="output-section primary-output">
-              <OutputTitle
+              <EditableOutput
+                className="primary-output"
                 title={t.primary}
                 target="primary"
+                value={editableDraft.primary}
                 copiedTarget={copiedTarget}
-                onCopy={() => copyText('primary', output.primaryStatement)}
+                minRows={7}
+                onChange={(primary) =>
+                  setEditableDraft((current) => ({ ...current, primary }))
+                }
+                onCopy={() => copyText('primary', editableDraft.primary)}
               />
-              <p>{output.primaryStatement}</p>
-            </article>
 
             <div className="document-columns">
-              <article className="output-section">
-                <OutputTitle
-                  title={t.short}
-                  target="short"
-                  copiedTarget={copiedTarget}
-                  onCopy={() => copyText('short', output.shortVersion)}
-                />
-                <p>{output.shortVersion}</p>
-              </article>
+              <EditableOutput
+                title={t.short}
+                target="short"
+                value={editableDraft.short}
+                copiedTarget={copiedTarget}
+                minRows={5}
+                onChange={(short) =>
+                  setEditableDraft((current) => ({ ...current, short }))
+                }
+                onCopy={() => copyText('short', editableDraft.short)}
+              />
 
-              <article className="output-section">
-                <OutputTitle
-                  title={t.structured}
-                  target="structured"
-                  copiedTarget={copiedTarget}
-                  onCopy={() => copyText('structured', output.structuredVersion.join('\n'))}
-                />
-                <ul>
-                  {output.structuredVersion.map((line) => (
-                    <li key={line}>{line}</li>
-                  ))}
-                </ul>
-            </article>
-          </div>
+              <EditableOutput
+                title={t.structured}
+                target="structured"
+                value={editableDraft.structured}
+                copiedTarget={copiedTarget}
+                minRows={8}
+                onChange={(structured) =>
+                  setEditableDraft((current) => ({ ...current, structured }))
+                }
+                onCopy={() => copyText('structured', editableDraft.structured)}
+              />
+            </div>
 
-          {output.riskNotes.length > 0 && (
-            <aside className="inline-risk-panel" aria-label="Risk notes">
-              <ShieldCheck aria-hidden="true" />
-              <div>
-                <h3>{t.clarity}</h3>
-                <ul>
-                  {output.riskNotes.map((note) => (
-                    <li key={note}>{note}</li>
-                  ))}
-                </ul>
-              </div>
-            </aside>
-          )}
+            {output.riskNotes.length > 0 && (
+              <aside className="inline-risk-panel" aria-label="Risk notes">
+                <ShieldCheck aria-hidden="true" />
+                <div>
+                  <h3>{t.clarity}</h3>
+                  <ul>
+                    {output.riskNotes.map((note) => (
+                      <li key={note}>{note}</li>
+                    ))}
+                  </ul>
+                </div>
+              </aside>
+            )}
           </section>
         </div>
       </section>
     </main>
   )
+}
+
+function createEditableDraft(
+  signature: string,
+  output: ReturnType<typeof generateDisclosure>,
+): EditableDraft {
+  return {
+    signature,
+    primary: output.primaryStatement,
+    short: output.shortVersion,
+    structured: output.structuredVersion.join('\n'),
+  }
 }
 
 type SegmentedControlProps<T extends string> = {
@@ -663,25 +598,46 @@ function SegmentedControl<T extends string>({
   )
 }
 
-type OutputTitleProps = {
+type EditableOutputProps = {
+  className?: string
   title: string
   target: string
+  value: string
   copiedTarget: string | null
+  minRows: number
+  onChange: (value: string) => void
   onCopy: () => void
 }
 
-function OutputTitle({ title, target, copiedTarget, onCopy }: OutputTitleProps) {
+function EditableOutput({
+  className = '',
+  title,
+  target,
+  value,
+  copiedTarget,
+  minRows,
+  onChange,
+  onCopy,
+}: EditableOutputProps) {
   return (
-    <div className="output-title">
-      <h3>{title}</h3>
-      <button type="button" onClick={onCopy} aria-label={`Copy ${title}`}>
-        {copiedTarget === target ? (
-          <CheckCircle2 aria-hidden="true" />
-        ) : (
-          <Clipboard aria-hidden="true" />
-        )}
-      </button>
-    </div>
+    <article className={`output-section ${className}`}>
+      <div className="output-title">
+        <h3>{title}</h3>
+        <button type="button" onClick={onCopy} aria-label={`Copy ${title}`}>
+          {copiedTarget === target ? (
+            <CheckCircle2 aria-hidden="true" />
+          ) : (
+            <Clipboard aria-hidden="true" />
+          )}
+        </button>
+      </div>
+      <textarea
+        value={value}
+        rows={minRows}
+        spellCheck="true"
+        onChange={(event) => onChange(event.target.value)}
+      />
+    </article>
   )
 }
 
